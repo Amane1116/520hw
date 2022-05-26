@@ -1,63 +1,87 @@
-// C++ code
-//
-#define NOTE_C3  131
-#define NOTE_CS3 139
-#define NOTE_D3  147
-#define NOTE_DS3 156
-#define NOTE_E3  165
-#define NOTE_F3  175
-#define NOTE_FS3 185
-#define NOTE_G3  196
-#define NOTE_GS3 208
-#define NOTE_A3  220
-#define NOTE_AS3 233
-#define NOTE_B3  247
-#define NOTE_C4  262
-#define NOTE_CS4 277
-#define NOTE_D4  294
-#define NOTE_DS4 311
-#define NOTE_E4  330
-#define NOTE_F4  349
-#define NOTE_FS4 370
-#define NOTE_G4  392
-#define NOTE_GS4 415
-#define NOTE_A4  440
-#define NOTE_AS4 466
-#define NOTE_B4  494
-#define NOTE_C5  523
-
-int btnPin[]={
-  2,3,4,5,6,7,8,9
+#include "pitches.h"
+byte btn;
+int valkyrieMelody[] = {
+  NOTE_A5, NOTE_A5,NOTE_A5, NOTE_A5, NOTE_B5, NOTE_C6, NOTE_B5, NOTE_B5,NOTE_E5,NOTE_B5,0,
+  NOTE_A5,NOTE_B5,NOTE_C6,NOTE_E5,NOTE_A5,NOTE_C6,NOTE_E6,NOTE_D6,NOTE_D6,0,
+  NOTE_B5,NOTE_A5,NOTE_B5,NOTE_D5,NOTE_B5,NOTE_D6,NOTE_D6,NOTE_C6,NOTE_C6,0,
+  NOTE_A5,NOTE_B5,NOTE_C6,NOTE_F5,NOTE_E5,NOTE_F5,NOTE_G5,NOTE_D6,NOTE_C6,0,
+  NOTE_A5,NOTE_A5,NOTE_A5,NOTE_A5,NOTE_B5,NOTE_C6,NOTE_B5,NOTE_E5,NOTE_D6,NOTE_C6,NOTE_B5,0
 };
 
-int tonePin = 10;
+int BeethovenMelody[] = {
+  NOTE_E6, NOTE_DS6, NOTE_E6, NOTE_DS6, NOTE_E6, NOTE_B5, NOTE_D6, 
+  NOTE_C6, NOTE_A5, 0, NOTE_C5, NOTE_E6,  NOTE_A6, NOTE_B6, 
+  0,NOTE_E5, NOTE_GS5, NOTE_B5, NOTE_C6,0,
+  NOTE_E6, NOTE_DS6, NOTE_E6, NOTE_DS6, NOTE_E6, NOTE_B5, NOTE_D6, 
+  NOTE_C6, NOTE_A5, 0, NOTE_C5, NOTE_E6,  NOTE_A6, NOTE_B6, 
+  0,NOTE_E5, NOTE_C6, NOTE_B5, NOTE_A5
+};
+
+// note durations: 4 = quarter note, 8 = eighth note, etc.:
+int noteDurations[] = {
+  8, 16, 6, 8, 8, 8, 6,16,8,4,8,
+  8,16,4,8,8,8,4,8,4,8,
+  8,16,6,8,8,8,4,8,4,8,
+  8,16,6,8,8,8,4,8,4,8,
+  8,16,6,8,8,8,4,8,8,8,8,8
+};
+
+int counterDurations[] = {
+  8, 8, 8, 8, 8, 8, 8,
+  8, 8, 4, 8, 8, 8, 8,
+  4, 8, 8, 8, 8, 4,
+  8, 8, 8, 8, 8, 8, 8,
+  8, 8, 4, 8, 8, 8, 8,
+  4, 8, 8, 8, 4
+};
 
 void setup()
 {
-  for (int thisNote = 0; thisNote < 8; thisNote++) {
-    pinMode(btnPin[thisNote], INPUT_PULLUP);
-  }
+  pinMode (2,INPUT_PULLUP);
 }
 
 void loop()
 {
-  int btnState1 = digitalRead(btnPin[0]);
-  int btnState2 = digitalRead(btnPin[1]);
-  int btnState3 = digitalRead(btnPin[2]);
-  int btnState4 = digitalRead(btnPin[3]);
-  int btnState5 = digitalRead(btnPin[4]);
-  int btnState6 = digitalRead(btnPin[5]);
-  int btnState7 = digitalRead(btnPin[6]);
-  int btnState8 = digitalRead(btnPin[7]);
-  
-  if(!btnState1)tone(tonePin,NOTE_C4);
-  else if(!btnState2)tone(tonePin,NOTE_D4);
-  else if(!btnState3)tone(tonePin,NOTE_E4);
-  else if(!btnState4)tone(tonePin,NOTE_F4);
-  else if(!btnState5)tone(tonePin,NOTE_G4);
-  else if(!btnState6)tone(tonePin,NOTE_A4);
-  else if(!btnState7)tone(tonePin,NOTE_B4);
-  else if(!btnState8)tone(tonePin,NOTE_C5);
-  else noTone(tonePin);
-   
+  btn = digitalRead(2);
+  if (btn ==LOW){
+    switchaa(1);
+  }
+  else switchaa(0);
+
+}
+void switchaa(int i){
+  if (i==1){
+    VK();
+  }
+  else classic();
+}
+
+void VK(){ 
+  for (int thisNote=0; thisNote <54; thisNote++) {
+
+     int noteDuration = 1000 / noteDurations [thisNote];
+     tone(8, valkyrieMelody [thisNote], noteDuration);
+
+     int pauseBetweenNotes = noteDuration * 2.0;
+     delay(pauseBetweenNotes);
+
+     //stop the tone playing
+     noTone(8);
+    }
+}
+void classic(){
+  for (int thisNote=0; thisNote <39; thisNote++) {
+
+      //to calculate the note duration, take one second. Divided by the note type
+      int noteDuration = 1000 / counterDurations [thisNote];
+      tone(8, BeethovenMelody [thisNote], noteDuration);
+
+      //to distinguish the notes, set a minimum time between them
+      //the note's duration +30% seems to work well
+      int pauseBetweenNotes = noteDuration * 1.30;
+      delay(pauseBetweenNotes);
+
+      //stop the tone playing
+      noTone(8);
+ }
 }
